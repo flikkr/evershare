@@ -1,36 +1,77 @@
 {% extends '@content/page.twig' %}
 
 {% block onload %}
-    $('#alert').on('click', function(){
-        bootbox.alert('Hello World')
-    })
+	$('#alert').on('click', function(){
+	        bootbox.alert('Hello World')
+	    })
 {% endblock onload %}
 
 {% block header %}
-    <section class="col-md-12 mt-5">
-        <h1 class="cntr">Header</h1>
-    </section>
+	<section class="col-md-12 mt-5">
+		<h1 class="cntr">Search for your course</h1>
+	</section>
 {% endblock header %}
 
+{% if not page is defined %}
+	{% set page = 1 %}
+	{% set pagesize = 10 %}
+{% endif %}
+
+{% set courses = siteinfo.pagecount('course',  pagesize) %}
+
 {% block main %}
-    <section class="row">
-        <aside class="col">
-            <p>Left</p>
-        </aside>
-        <article class="col-md-8">
-            <div class="jumbotron">
-                This is the middle column
-            </div>
-            <button id="alert" class="btn btn-lg btn-info" type="button">Alert</button>
-        </article>
-        <aside id="rightbar" class="col">
-            <p>Right</p>
-        </aside>
-    </section>
+	<section class="row">
+		<div class="w-100">
+			<form class="col-12 d-flex justify-content-center">
+				<select class="form-control w-50 my-4" id="courseSelection">
+					{% for nb in courses %}
+						<option>{{nb.name}}</option>
+					{% endfor %}
+
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+					<option>5</option>
+				</select>
+			</form>
+		</div>
+		{# <aside class="col">
+		            <p>Left</p>
+		        </aside> #}
+	{# <article class="col-md-8">
+	            <div class="jumbotron">
+	                This is the middle column
+	            </div>
+	            <button id="alert" class="btn btn-lg btn-info" type="button">Alert</button>
+	        </article> #}
+		{# <aside id="rightbar" class="col">
+		            <p>Right</p>
+		        </aside> #}
+	</section>
+	<section>
+		<div class="card-deck">
+			<div class="card">
+				<div class="card-header text-center">
+					<h5>Module code</h5>
+                    <h6>Module title</h6>
+				</div>
+				<div class="card-body">
+					<p><i class="fas fa-users"></i> Contributors</p>
+					<p><i class="fas fa-star"></i> Followers</p>
+					<p></p>
+				</div>
+				<div class="card-footer">
+					<p><i class="far fa-star"></i> Follow module</p>
+				</div>
+			</div>
+			
+		</div>
+	</section>
 {% endblock main %}
 
-{% block footer %}
+{# {% block footer %}
     <section class="col-md-12">
         <p class="cntr">Footer</p>
     </section>
-{% endblock footer %}
+{% endblock footer %} #}
