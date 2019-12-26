@@ -1,0 +1,8 @@
+*.komodoproject
+._*
+.[a-z]*
+vendor
+composer.lock
+
+*.codekit3
+*.php~
