@@ -8,6 +8,9 @@
     namespace Pages;
     
     use \Support\Context as Context;
+    use \R as R;
+
+    $choice = 1;
 /**
  * A class that contains code to implement a home page
  */
@@ -22,7 +25,14 @@
  */
         public function handle(Context $context)
         {
-            return '@content/index.twig';
+            if ($context->hasadmin())
+            {
+                return '@content/index.twig';
+            }
+            else
+            {
+                return '@content/browse.twig';
+            }
         }
     }
 ?>

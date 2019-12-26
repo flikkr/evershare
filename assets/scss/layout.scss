@@ -1,3 +1,17 @@
+/**
+ * CONTENTS
+ *
+ * DEFAULT
+ *
+ * TEXT 
+ * Decorations............Text decorations
+ * 
+ */
+
+/*------------------------------------*\
+  #DEFAULT
+\*------------------------------------*/
+
 body {
     font-family: sans-serif;
     background-color:   #fff;
@@ -13,4 +27,12 @@ body {
 
 .actb,.admb,.editb,.delb,.devb,.reqb,.rdob,.disb {
     cursor:             pointer;
+}
+
+/*------------------------------------*\
+  #Decorations
+\*------------------------------------*/
+.nodec {
+    color:              black;
+    // text-decoration:    none;
 }

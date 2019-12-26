@@ -1,0 +1,218 @@
+{# Uncomment this if your page uses AJAX
+{% set ajax = TRUE %}
+#}
+
+{% extends '@content/page.twig' %}
+
+{% import '@util/formmacro.twig' as f %}
+{% import '@util/modalmacro.twig' as m %}
+
+{# put a string in this block that will appear as the title of the page
+{% block title %}
+{% endblock title %}
+#}
+
+{% block links %}
+{# <link> for non-css and non-type things#}
+{% endblock links %}
+
+{% block type %}
+{# <link> for webfonts #}
+{% endblock type %}
+
+{% block css %}
+{# <link> for any other CSS files you need #}
+{% endblock css %}
+
+{% block scripts %}
+    <script src="{{assets}}/js/functions.js"></script>
+{% endblock scripts %}
+
+{% block setup %}
+    $('#download').click(function(e) {
+        e.preventDefault();
+        {% for upload in uploads %}
+            window.open('{{base}}/{{upload.fname}}/');
+        {% endfor %}
+    });
+{% endblock setup %}
+
+{% block onload %}
+{# Any javascript you need that MUST run on load goes in this block. NB you don't need <script></script> tags  here #}
+{% endblock onload %}
+
+{# If you include this, then the navigation bar in @util/page.twig will **NOT** appear
+{% block navigation %}
+{% endblock navigation %}
+#}
+
+{#
+    Edit the file navbar.twig to change the appearance of the
+    navigation bar. It is included by default from @util/page.twig
+#}
+
+{# uncomment this and delete header block to remove the <header> tag altogether
+{% block pageheader %}
+{% endblock pageheader %}
+#}
+
+{#
+    If you have a standard header for all (most) pages then put the
+    content in the file header.twig. It is included by @util/page.twig by
+    default. You then don't need to have a header block either.
+#}
+
+{% set mod = siteinfo.getBean('module', upload.module_id) %}
+{% set user = siteinfo.getBean('user', upload.user_id) %}
+{% set uploads = siteinfo.uploadGroup(upload.group_id, user.id) %}
+
+{% block header %}
+    <article class="col-md-12 mt-5">
+        <h3>{{mod.code}}: {{mod.name}}</h3>
+        <h1>{{upload.title}}</h1>
+    </article>
+{% endblock header %}
+
+{% block main %}
+    <div class="container">
+        <div class="row">
+            {# Carousel #}
+            <div class="border rounded my-3 p-3 col-lg-8">
+                <div id="carouselIndicators" class="carousel slide" data-ride="carousel">
+                    <ol class="carousel-indicators">
+                        {% for upload in uploads %}
+                            <li data-target="#carouselIndicators" data-slide-to="{{loop.index0}}" {% if loop.index0 == 0 %}class="active"{% endif %}></li>
+                        {% endfor %}
+                    </ol>
+                    <div class="carousel-inner">
+                        {% for upload in uploads %}
+                            <div class="carousel-item {% if loop.index0 == 0 %}active{% endif %}">
+                                <img class="d-block w-100" src="{{base}}/{{upload.fname}}/">
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <a class="carousel-control-prev" href="#carouselIndicators" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#carouselIndicators" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </div>
+            </div>
+            {# Profile #}
+            <div class="border rounded my-3 p-3 col-lg-4">
+                <div class="row">
+                    <h3 class="text-break col-9"><a href="{{base}}/profile/{{user.id}}/" class="text-dark"><i class="fas fa-user"></i> {{user.login}}</a></h3>
+                    {% if user.id == context.user.id %}
+                        <div class="dropdown show">
+                            <a class="text-secondary" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="pt-2 col float-right fas fa-cog fa-lg"></i>
+                            </a>
+                            <div class="dropdown-menu mt-4" aria-labelledby="dropdownMenuLink">
+                                <a class="dropdown-item" data-toggle="modal" data-target="#editModal">Edit</a>
+                                <a class="text-danger dropdown-item" onclick="document.getElementById('delf').submit();">Delete</a>
+                            </div>
+                        </div>
+                        <form id="delf" method="post" action="#">
+                            <input type="hidden" name="formid" value="2" id="hiddenform"></input>
+                        </form>
+                    {% endif %}
+                </div>
+                <p>Created on: {{added}}</p>
+                {# Button to follow user #}
+                {% if user.id == context.user.id %}
+                    {# insert button here #}
+                {% endif %}
+                {% if upload.description != '' %}
+                    <p class="mt-2">{{upload.description}}</p>
+                {% endif %}
+                <div>
+                    {# RATING GOES HERE #}
+                </div>
+                <div class="dropdown w-25">
+                    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-download"></i> Download notes
+                    </button>
+                    {# For some reason all of my dropdown menus stopped working suddenly, is this just an issue on my computer? #}
+                    {# To access dropdown items, just comment dropdown-menu div #}
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        {% for upload in uploads %}
+                            <a href="{{base}}/{{upload.fname}}/" class="btn btn-outline-primary col">{{upload.filename}}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Modal #}
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="moduleModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit note</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {% include '@util/message.twig' %}
+                    <form action="#" method="post" role="form" enctype="multipart/form-data" class="justify-content-center" onsubmit="return validateUpl()">
+                        <div class="form-group">
+                            <label for="module-selection">Module</label>
+                            <select class="form-control" id="module-selection" name="module">
+                                {% for module in siteinfo.modules %}
+                                    <option value="{{module.getID}}" {% if module.id == upload.module_id %}selected="selected"{% endif %}>{{module.code}}: {{module.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="note-title">Title</label>
+                            <input type="text" class="form-control" id="note-title" placeholder="Give a title to your notes" name="title" value="{{upload.title}}" required="required"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="note-description">Description (optional)</label>
+                            <input type="text" class="form-control" id="note-description" placeholder="Add a description to your notes" name="descr" rows="3" value="{{upload.description}}"/>
+                        </div>
+                        {# <p>Replace files</p>
+                        {% for upload in uploads %}
+                            <div class="form-group container border rounded">
+                                <label for="f{{loop.index0}}" class="control-label">{{upload.filename}}</label>
+                                <input type="file" id="f{{loop.index0}}" name="upload{{loop.index0}}" class="form-control-file" />
+                            </div>
+                            </hr>
+                        {% endfor %}
+                        <div class="form-group">
+                            <label for="addmore" class="control-label">Add files (png, jpg)</label>
+                            <input type="file" id="addmore" name="uploads[]" class="form-control-file" multiple="multiple"/>
+                        </div> #}
+                        <div class="form-group">
+                            <input type="hidden" class="form-control" id="hiddenModal" name="formid" value="1"/>
+                        </div>
+                        <button class="btn btn-primary" type="submit" value="submit">Save changes</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock main %}
+
+{# uncomment this  and delete footer block to remove the <footer> tag altogether
+{% block pagefooter %}
+{% endblock pagefooter %}
+#}
+
+{#
+    If you have a standard footer for all (most) pages then put the
+    content in the file footer.twig. It is included by @util/page.twig by
+    default. You then don't need to have a footer block either.
+#}
+
+{% block footer %}
+{% endblock footer %}

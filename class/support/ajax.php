@@ -14,16 +14,30 @@
  */
     class Ajax extends \Framework\Ajax
     {
+        
 /**
- * Add functions that implement your AJAX operations here and register them
- * in the handle method below.
+ * Handle AJAX operation when selecting course
+ *
+ * @param \Support\Context	$context	The context object for the site
+ *
+ * @return void
  */
-/*
-        public function yourop(Context $context)
+        public function retrieveModules(Context $context, int $courseID)
         {
-            // your code
+            // get all modules
+
+            // $myObj->name = "John";
+            // $myObj->age = 30;
+            // $myObj->city = "New York";
+
+            // $myJSON = json_encode($myObj);
+            
+            // check those that have same course id
+            // if true, add to json array
+
+            //return json array
         }
- */
+
 /**
  * If you are using the pagination or search hinting features of the framework then you need to
  * add some appropriate vaues into these arrays.

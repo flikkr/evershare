@@ -1,0 +1,105 @@
+{% set ajax = TRUE %}
+
+{% extends '@content/page.twig' %}
+
+{% import '@util/formmacro.twig' as f %}
+{% import '@util/modalmacro.twig' as m %}
+{% import '@util/attrmacro.twig' as h %}
+
+{% block scripts %}
+    <script {{h.urlattr(fwurls.utiljs)}}></script>
+{% endblock scripts %}
+
+{% set ops = [ 'bean', 'config', 'hints', 'paging', 'pwcheck', 'shared', 'table', 'tablecheck', 'tablesearch', 'toggle', 'unique', 'uniquenl'] %}
+
+{% block setup %}
+    function testbean()
+    {
+        bootbox.alert('Bean operation test complete');
+    }
+
+    function testconfig()
+    {
+        bootbox.alert('Config operation test complete');
+    }
+
+    function testhints()
+    {
+        bootbox.alert('Hints operation test complete');
+    }
+
+    function testpaging()
+    {
+        bootbox.alert('Paging operation test complete');
+    }
+
+    function testpwcheck()
+    {
+        bootbox.alert('Pwcheck operation test complete');
+    }
+
+    function testshared()
+    {
+        bootbox.alert('Shared operation test complete');
+    }
+
+    function testtable()
+    {
+        bootbox.alert('Table operation test complete');
+    }
+
+    function testtablecheck()
+    {
+        bootbox.alert('Tablecheck operation test complete');
+    }
+
+    function testtablesearch()
+    {
+        bootbox.alert('Tablesearch operation test complete');
+    }
+
+    function testtoggle()
+    {
+        bootbox.alert('Toggle operation test complete');
+    }
+
+    function testunique()
+    {
+        bootbox.alert('Unique operation test complete');
+    }
+      
+    function testuniquenl()
+    {
+        bootbox.alert('Uniquenl operation test complete');
+    }  
+{% endblock setup %}
+
+{% block onload %}
+    {% for x in ops %}
+        $('#{{x}}').on('click', test{{x}});
+    {% endfor %}
+{% endblock onload %}
+
+{% block header %}
+    <section class="col-md-12 mt-5">
+        <h1>Test Framework AJAX calls</h1>
+        {% if context.hasadmin %}
+            <h2>Running as Site Admin</h2>
+        {% elseif context.user.hasrole('Test', 'Tester') %}
+            <h2>Running as Test Tester</h2>
+        {% endif %}
+    </section>
+{% endblock header %}
+
+{% block main %}
+    <section class="row">
+        <article class="ml-auto col-md-10 mr-auto">
+            {% for x in ops %}
+                <p><button class="btn btn-info" id="{{x}}">Test {{x}}</button></p>
+            {% endfor %}
+        </article>
+    </section>
+{% endblock main %}
+
+{% block pagefooter %}
+{% endblock pagefooter %}

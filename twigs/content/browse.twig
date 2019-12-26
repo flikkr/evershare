@@ -1,0 +1,127 @@
+{% set ajax = TRUE %}
+{% extends '@content/page.twig' %}
+
+{# this brings in some useful macros for making bootstrap modals #}
+{% import '@util/modalmacro.twig' as m %}
+
+{% block css %}
+{# <link> for any other CSS files you need #}
+{% endblock css %}
+
+{% block scripts %}
+	<script src="{{assets}}/js/functions.js"></script>
+{% endblock scripts %}
+
+{% block onload %}
+	$('#alert').on('click', function(){
+							        bootbox.alert('Hello World')
+							    })
+{% endblock onload %}
+
+{% block header %}
+	<section class="cntr col-md-12 mt-5">
+		{% include '@util/message.twig' %}
+		{% if context.hasuser %}
+			<h1>Search for your course</h1>
+		{% else %}
+			<h1>Welcome to EverShare</h1>
+			<a class="cntr mt-5 btn btn-primary" href="{{base}}/login/">Register an account or log in here</a>
+		{% endif %}
+	</section>
+{% endblock header %}
+
+{% block main %}
+	{% if context.hasuser %}
+		<section class="row">
+			<div class="w-100">
+				<form class="col-12 d-flex justify-content-center" action="{{base}}/browse/" method="get" role="form" class="justify-content-center" onsubmit="return validateCourse()">
+					<select class="form-control w-50 my-4 col-9" id="course-selection" name="courseID">
+						<option class="text-muted" value="default" selected disabled>Please select your course</option>
+						{% for course in siteinfo.courses %}
+							<option value="{{course.getID}}">{{course.name}}</option>
+						{% endfor %}
+					</select>
+					<input type="hidden" class="form-control" id="hiddenModal" name="formid" value="2"/>
+					<div class="col"></div>
+					<button class="col-2 btn btn-primary h-50 mt-4" type="submit" class="btn btn-primary h-25">Search</button>
+				</form>
+			</div>
+		</section>
+		<hr/>
+		<section>
+			<div class="container">
+				<div class="row">
+					<div class="cntr card col-lg-3">
+						<a class="my-auto" data-toggle="modal" data-target="#moduleModal">
+							<i class="fas fa-plus-circle fa-5x py-5 my-5"></i>
+						</a>
+						<button type="button" class="btn btn-outline-secondary stretched-link my-2" data-toggle="modal" data-target="#moduleModal">Create new module</button>
+					</div>
+					{# Only show modules after selecting course #}
+					{% if hasCourse == 'true' %}
+						{% for module in siteinfo.modulesPerCourse(course.id) %}
+							{% set count = siteinfo.uploadsPerModule(module.id)|length %}
+							<div class="card col-lg-3">
+								<div class="card-header text-center">
+									<a class="text-dark stretched-link" href="{{base}}/module/{{module.id}}/">
+										<h5>{{module.code}}</h5>
+										<h6>{{module.name}}</h6>
+									</a>
+								</div>
+								<div class="card-body">
+									<p><i class="fas fa-sticky-note"></i></i> {{count}} Upload{% if (count > 1 or count == 0) %}s{% endif %}</p>
+									{# <p><i class="fas fa-star"></i> Followers</p> #}
+								</div>
+								{# <div class="card-footer">
+									<p><i class="far fa-star"></i> Follow module</p>
+								</div> #}
+							</div>
+						{% endfor %}
+					{% endif %}
+				</div>
+			</div>
+		</section>
+
+		{# Modal #}
+		<div class="modal fade" id="moduleModal" tabindex="-1" role="dialog" aria-labelledby="moduleModalTitle" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLongTitle">Add new course</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form id="addMod" action="#" method="post" role="form" class="justify-content-center" onsubmit="return validateMod()">
+							<div class="form-group">
+								<label for="courseSelectionModal">Select the course</label>
+								<select class="form-control" id="courseSelectionModal" name="courseID">
+									<option class="text-muted" value="default" selected disabled>Please select your course</option>
+									{% for course in siteinfo.courses %}
+										<option value="{{course.getID}}">{{course.name}}</option>
+									{% endfor %}
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="moduleCodeModal">Enter module code</label>
+								<input maxlength="7" type="text" class="form-control" id="moduleCodeModal" placeholder="Format: XXX1234 (e.g. CSC3095)" name="code" required/>
+							</div>
+							<div class="form-group">
+								<label for="moduleTitleModal">Enter module title</label>
+								<input maxlength="70" type="text" class="form-control" id="moduleTitleModal" placeholder="Please enter the module as it appears in the course catalogue" name="name" required/>
+							</div>
+							<div class="form-group">
+								<input type="hidden" class="form-control" id="hiddenModal" name="formid" value="1"/>
+							</div>
+							<button type="submit" class="btn btn-primary">Save module</button>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+    {% endif %}
+{% endblock main %}
